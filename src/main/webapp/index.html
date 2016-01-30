@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Vadim Lyalin's Test</title>
+	<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+	<style type="text/css">
+		body {
+			padding-left: 20px;
+		}
+		#searchTable {
+			width: 800px;
+		}
+
+		#searchTable thead th {
+			background-color: lightblue;
+		}
+		#searchTable tr.odd td {
+			background-color: lightgrey;
+		}
+		#searchTable td {
+			padding: 2px 5px;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		Search text: <input type="text" id="text" style="width: 400px;">
+		<button onclick="search();">Search</button>
+		<div id="error" style="color: red; display: none;">Wrong search string format</div>
+	</div>
+
+	<div>
+		Search string format:
+		<ol>
+			<li>Lisp Common: search any of words</li>
+			<li>"Thomas Eugene": exact matching</li>
+			<li>-array: exclude word</li>
+		</ol>
+	</div>
+
+	<table id="searchTable" style="display: none;">
+		<thead>
+		<tr>
+			<th>#</th>
+			<th>Name</th>
+			<th>Title</th>
+			<th>Designed by</th>
+		</tr>
+		</thead>
+		<tbody id="searchResultContainer">
+		</tbody>
+	</table>
+
+<script type="text/javascript">
+	function search() {
+		$.ajax('search', {
+			cache: false,
+			data: {text: $('#text').val()},
+			dataType: 'json',
+			success: function(langs) {
+				$('#error').hide();
+				$('#searchTable').show();
+				var tbody = $('#searchResultContainer')
+					.empty();
+				for (var i = 0; i < langs.length; i++) {
+					var lang = langs[i];
+					var tr = document.createElement('tr');
+					if(i % 2) {
+						$(tr).attr('class', 'odd');
+					}
+					$(tr).append('<td>' + (i + 1) + '</td>')
+						.append('<td>' + lang.Name + '</td>')
+						.append('<td>' + lang.Type + '</td>')
+						.append('<td>' + lang['Designed by'] + '</td>');
+					tbody.append(tr);
+				}
+			},
+			error: function() {
+				$('#error').show();
+			}
+		})
+	}
+</script>
+</body>
+</html>
